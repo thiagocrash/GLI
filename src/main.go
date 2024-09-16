@@ -8,6 +8,7 @@ import (
     "os"
     "bufio"
     "strings"
+    "runtime"
 )
 var (
   name string
@@ -47,7 +48,7 @@ func get_between_quotes(line string) string {
 func print_data() {
 
   output := `
-         _nnnn_                              `+"Golang Status Program"+`
+         _nnnn_                              `+"Golang Status Program (" + runtime.Version() + ")" +`
          dGGGGMMb     ,"""""""""""""".       `+"Distro: "+name+`
        @p~qp~~qMb    | Linux Rules! |        `+"Version: "+version+`
        M|@||@) M|   _;..............'
