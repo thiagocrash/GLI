@@ -48,12 +48,13 @@ func get_between_quotes(line string) string {
 func print_data() {
   reset := "\033[0m"
   yellow := "\033[33m"
+  blue := "\033[34m" 
   output := `
-         _nnnn_                              `+"Golang Status Program (" + runtime.Version() + ")" +`
-         dGGGGMMb     ,"""""""""""""".       `+"Distro: "+name+`
-       @p~qp~~qMb    |`+yellow+` Linux Rules! `+reset+`|        `+"Version: "+version+`
-       M|@||@) M|   _;..............'
-       @,----.JM| -'
+         _nnnn_                              `+blue+"GLI"+reset+`
+         dGGGGMMb     ,"""""""""""""".       `+blue+"----------------"+reset+`
+       @p~qp~~qMb    |`+yellow+` Linux Rules! `+reset+`|        `+blue+"Distro: "+reset+name+`
+       M|@||@) M|   _;..............'        `+blue+"Version: "+reset+version+`
+       @,----.JM| -'                         `+blue+"Go Version: "+reset+runtime.Version()+`
       JS^\__/  qKL
      dZP        qKRb
     dZP          qKKb
