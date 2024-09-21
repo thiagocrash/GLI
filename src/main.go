@@ -3,9 +3,13 @@ package main
 // "io"
 // "bufio"
 
+// Memory: free -g -h -t
+// PC Name: hostnamectl | grep 'Static' | sed 's/^.*: //'
+
 import (
     "fmt"
     "os"
+    "os/exec"
     "bufio"
     "strings"
     "runtime"
@@ -14,7 +18,17 @@ var (
   name string
   version string
 )
+func run_cmd(command string) string {
+  cmd := exec.Command("bash", "-c", command)
+  output , err := cmd.Output()
 
+  if err != nil {
+    fmt.Printf("Command executed with a error! (%s)\n",command)
+    return ""
+  }
+  
+  return strings.TrimSpace(string(output)) 
+}
 func get_attrib(file string , keyword string) string {
   scanner := bufio.NewScanner(strings.NewReader(file))
   ret := ""
@@ -49,16 +63,16 @@ func print_data() {
   reset := "\033[0m"
   yellow := "\033[33m"
   blue := "\033[34m" 
-  output := `
+  fmt.Println(`
          _nnnn_                              `+blue+"GLI"+reset+`
          dGGGGMMb     ,"""""""""""""".       `+blue+"----------------"+reset+`
        @p~qp~~qMb    |`+yellow+` Linux Rules! `+reset+`|        `+blue+"Distro: "+reset+name+`
        M|@||@) M|   _;..............'        `+blue+"Version: "+reset+version+`
        @,----.JM| -'                         `+blue+"Go Version: "+reset+runtime.Version()+`
-      JS^\__/  qKL
-     dZP        qKRb
-    dZP          qKKb
-   fZP            SMMb
+       JS^\__/  qKL                          `+blue+"PC Name: "+reset+run_cmd("hostnamectl | grep 'Static' | sed 's/^.*: //'")+`
+     dZP        qKRb                         `+blue+"Architecture: "+reset+run_cmd("hostnamectl | grep 'Architecture' | sed 's/^.*: //'")+`
+    dZP          qKKb                        `+blue+"Used RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $3}'")+` 
+   fZP            SMMb                       `+blue+"Total RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $2}'")+`
    HZM            MMMM
    FqM            MMMM
  __| ".        |\dS"qML
@@ -66,10 +80,13 @@ func print_data() {
 _)      \.___.,|     .'
 \____   )MMMMMM|   .'
      \-'       \--'
-  `
-  fmt.Println(output)
+  `)
 }
 func main() {
+  if runtime.GOOS != "linux" {
+    fmt.Println("GLI is only supported on Linux")
+    return
+  }
   distro_info, err := os.ReadFile("/etc/os-release")
   if err != nil {
     panic(err)
@@ -81,4 +98,6 @@ func main() {
   name = get_attrib(string(distro_info), "NAME")
   version = get_attrib(string(distro_info), "VERSION")
   print_data()
+
+  
 }
