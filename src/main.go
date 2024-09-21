@@ -8,10 +8,12 @@ import (
     "strings"
     "runtime"
 )
+
 var (
   name string
   version string
 )
+
 func run_cmd(command string) string {
   cmd := exec.Command("bash", "-c", command)
   output , err := cmd.Output()
@@ -23,6 +25,7 @@ func run_cmd(command string) string {
   
   return strings.TrimSpace(string(output)) 
 }
+
 func get_attrib(file string , keyword string) string {
   scanner := bufio.NewScanner(strings.NewReader(file))
   ret := ""
@@ -83,6 +86,7 @@ func get_between_quotes(line string) string {
   }
   return line[start+1 : start+1+end] 
 }
+
 func print_data() {
   reset := "\033[0m"
   yellow := "\033[33m"
@@ -107,6 +111,7 @@ _)      \.___.,|     .'
   `)
 //
 }
+
 func main() {
   if runtime.GOOS != "linux" {
     fmt.Println("GLI is only supported on Linux")
@@ -116,13 +121,7 @@ func main() {
   if err != nil {
     panic(err)
   }
-  // memory_info, err := os.ReadFile("/proc/meminfo")
-  // if err != nil {
-  //   panic(err)
-  // }
   name = get_attrib(string(distro_info), "NAME")
   version = get_attrib(string(distro_info), "VERSION")
   print_data()
-
-  
 }
