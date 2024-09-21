@@ -1,11 +1,5 @@
 package main
 
-// "io"
-// "bufio"
-
-// Memory: free -g -h -t
-// PC Name: hostnamectl | grep 'Static' | sed 's/^.*: //'
-
 import (
     "fmt"
     "os"
