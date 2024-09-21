@@ -50,7 +50,7 @@ func get_cpu() string {
   index := 4
   for {
     line := run_cmd(fmt.Sprintf("cat /proc/cpuinfo | grep 'model name' | head -1 | awk '{print $%d}'", index))
-    if len(strings.TrimSpace(line)) == 0 {
+    if len(strings.TrimSpace(line)) == 0 || index > 7 {
       break
     } else {
       cpu = fmt.Sprintf("%s %s", cpu, line)
@@ -92,7 +92,7 @@ func print_data() {
   yellow := "\033[33m"
   blue := "\033[34m" 
   fmt.Println(`
-         _nnnn_                              `+blue+"GLI"+reset+`
+         _nnnn_                              `+blue+"GLI"+"   "+run_cmd("date | awk '{print $5}'")+reset+`
          dGGGGMMb     ,"""""""""""""".       `+blue+"----------------"+reset+`
        @p~qp~~qMb    |`+yellow+` Linux Rules! `+reset+`|        `+blue+"Kernel: "+reset+run_cmd("uname -r")+`
        M|@||@) M|   _;..............'        `+blue+"Distro: "+reset+name+`
