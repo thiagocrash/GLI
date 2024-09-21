@@ -2,16 +2,9 @@ package main
 
 import (
     "fmt"
-    "os"
     "os/exec"
-    "bufio"
     "strings"
     "runtime"
-)
-
-var (
-  name string
-  version string
 )
 
 func run_cmd(command string) string {
@@ -24,25 +17,6 @@ func run_cmd(command string) string {
   }
   
   return strings.TrimSpace(string(output)) 
-}
-
-func get_attrib(file string , keyword string) string {
-  scanner := bufio.NewScanner(strings.NewReader(file))
-  ret := ""
-  for scanner.Scan() {
-    line := scanner.Text()
-    if strings.HasPrefix(line, keyword) {
-      ret = line
-      break
-    }
-  }
-  if scanner.Err() != nil {
-    panic(scanner.Err())
-  }
-  if len(ret) > 0 {
-    ret = get_between_quotes(ret)
-  } 
-  return ret 
 }
 
 func get_cpu() string {
@@ -75,18 +49,6 @@ func get_gpu() string {
   return strings.TrimSpace(gpu)
 }
 
-func get_between_quotes(line string) string {
-  start := strings.Index(line, "\"")
-  if start == -1 {
-    return "" 
-  }
-  end := strings.Index(line[start+1:], "\"")
-  if end == -1 {
-    return "" 
-  }
-  return line[start+1 : start+1+end] 
-}
-
 func print_data() {
   reset := "\033[0m"
   yellow := "\033[33m"
@@ -95,15 +57,15 @@ func print_data() {
          _nnnn_                              `+blue+"GLI"+"   "+run_cmd("date | awk '{print $5}'")+reset+`
          dGGGGMMb     ,"""""""""""""".       `+blue+"----------------"+reset+`
        @p~qp~~qMb    |`+yellow+` Linux Rules! `+reset+`|        `+blue+"Kernel: "+reset+run_cmd("uname -r")+`
-       M|@||@) M|   _;..............'        `+blue+"Distro: "+reset+name+`
-       @,----.JM| -'                         `+blue+"Version: "+reset+version+`
-       JS^\__/  qKL                          `+blue+"Go Version: "+reset+runtime.Version()+`
-     dZP        qKRb                         `+blue+"PC Name: "+reset+run_cmd("hostnamectl | grep 'Static' | sed 's/^.*: //'")+`
-    dZP          qKKb                        `+blue+"Architecture: "+reset+run_cmd("hostnamectl | grep 'Architecture' | sed 's/^.*: //'")+` 
-   fZP            SMMb                       `+blue+"Used RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $3}'")+`
-   HZM            MMMM                       `+blue+"Total RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $2}'")+`
-   FqM            MMMM                       `+blue+"CPU: "+reset+get_cpu()+`
- __| ".        |\dS"qML                      `+blue+"GPU: "+reset+get_gpu()+`
+       M|@||@) M|   _;..............'        `+blue+"Distro: "+reset+run_cmd("hostnamectl | grep 'Operating System' | sed 's/^.*: //'")+`
+       @,----.JM| -'                         `+blue+"Go Version: "+reset+runtime.Version()+`
+       JS^\__/  qKL                          `+blue+"PC Name: "+reset+run_cmd("hostname")+`
+     dZP        qKRb                         `+blue+"Architecture: "+reset+run_cmd("hostnamectl | grep 'Architecture' | sed 's/^.*: //'")+`
+    dZP          qKKb                        `+blue+"Used RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $3}'")+` 
+   fZP            SMMb                       `+blue+"Total RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $2}'")+`
+   HZM            MMMM                       `+blue+"CPU: "+reset+get_cpu()+`
+   FqM            MMMM                       `+blue+"GPU: "+reset+get_gpu()+`
+ __| ".        |\dS"qML
  |    \.       | \' \Zq
 _)      \.___.,|     .'
 \____   )MMMMMM|   .'
@@ -117,11 +79,5 @@ func main() {
     fmt.Println("GLI is only supported on Linux")
     return
   }
-  distro_info, err := os.ReadFile("/etc/os-release")
-  if err != nil {
-    panic(err)
-  }
-  name = get_attrib(string(distro_info), "NAME")
-  version = get_attrib(string(distro_info), "VERSION")
   print_data()
 }
