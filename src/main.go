@@ -48,6 +48,36 @@ func get_attrib(file string , keyword string) string {
   return ret 
 }
 
+func get_cpu() string {
+  cpu := ""
+  index := 4
+  for {
+    line := run_cmd(fmt.Sprintf("cat /proc/cpuinfo | grep 'model name' | head -1 | awk '{print $%d}'", index))
+    if len(strings.TrimSpace(line)) == 0 {
+      break
+    } else {
+      cpu = fmt.Sprintf("%s %s", cpu, line)
+      index += 1
+    }
+  }
+  return strings.TrimSpace(cpu)
+}
+
+func get_gpu() string {
+  gpu := ""
+  index := 5
+  for {
+    line := run_cmd(fmt.Sprintf("glxinfo | grep 'OpenGL renderer' | awk '{print $%d}'", index))
+    if len(strings.TrimSpace(line)) == 0 {
+      break
+    } else {
+      gpu = fmt.Sprintf("%s %s", gpu , line)
+      index += 1
+    }
+  }
+  return strings.TrimSpace(gpu)
+}
+
 func get_between_quotes(line string) string {
   start := strings.Index(line, "\"")
   if start == -1 {
@@ -66,21 +96,22 @@ func print_data() {
   fmt.Println(`
          _nnnn_                              `+blue+"GLI"+reset+`
          dGGGGMMb     ,"""""""""""""".       `+blue+"----------------"+reset+`
-       @p~qp~~qMb    |`+yellow+` Linux Rules! `+reset+`|        `+blue+"Distro: "+reset+name+`
-       M|@||@) M|   _;..............'        `+blue+"Version: "+reset+version+`
-       @,----.JM| -'                         `+blue+"Go Version: "+reset+runtime.Version()+`
-       JS^\__/  qKL                          `+blue+"PC Name: "+reset+run_cmd("hostnamectl | grep 'Static' | sed 's/^.*: //'")+`
-     dZP        qKRb                         `+blue+"Architecture: "+reset+run_cmd("hostnamectl | grep 'Architecture' | sed 's/^.*: //'")+`
-    dZP          qKKb                        `+blue+"Used RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $3}'")+` 
-   fZP            SMMb                       `+blue+"Total RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $2}'")+`
-   HZM            MMMM
-   FqM            MMMM
- __| ".        |\dS"qML
+       @p~qp~~qMb    |`+yellow+` Linux Rules! `+reset+`|        `+blue+"Kernel: "+reset+run_cmd("uname -r")+`
+       M|@||@) M|   _;..............'        `+blue+"Distro: "+reset+name+`
+       @,----.JM| -'                         `+blue+"Version: "+reset+version+`
+       JS^\__/  qKL                          `+blue+"Go Version: "+reset+runtime.Version()+`
+     dZP        qKRb                         `+blue+"PC Name: "+reset+run_cmd("hostnamectl | grep 'Static' | sed 's/^.*: //'")+`
+    dZP          qKKb                        `+blue+"Architecture: "+reset+run_cmd("hostnamectl | grep 'Architecture' | sed 's/^.*: //'")+` 
+   fZP            SMMb                       `+blue+"Used RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $3}'")+`
+   HZM            MMMM                       `+blue+"Total RAM: "+reset+run_cmd("free -h | grep Mem | awk '{print $2}'")+`
+   FqM            MMMM                       `+blue+"CPU: "+reset+get_cpu()+`
+ __| ".        |\dS"qML                      `+blue+"GPU: "+reset+get_gpu()+`
  |    \.       | \' \Zq
 _)      \.___.,|     .'
 \____   )MMMMMM|   .'
      \-'       \--'
   `)
+//
 }
 func main() {
   if runtime.GOOS != "linux" {
